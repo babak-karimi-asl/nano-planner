@@ -1,0 +1,103 @@
+
+<!-- ---------------- CSS Variables ----------------- -->
+<style>
+:root{
+  --direction:ltr;
+  --background:#48475a;
+  --card:#74728b;
+  --text:#dedede;
+  --accent:#ffa200;
+  --border-radius:12px;
+}
+.direction-rtl{ --direction:rtl; }
+.theme-dark{ 
+  --background:#48475a;
+  --card:#74728b;
+  --text:#dedede;
+  --accent:#ffa200;
+}
+.theme-light{ 
+  --background:#b0b3c4;
+  --card:#f4f4f4;
+  --text:#272727;
+  --accent:#00ffae;
+}
+</style>
+
+<!-- ---------------- Page Styles ----------------- -->
+<style>
+*{ direction:var(--direction); }
+body{padding:40px 0 0 0;margin:0;background-color:var(--background);color:var(--text);}
+#main{position:relative;width:600px;max-width:90vw;margin:auto;background-color:var(--card);color:var(--text);padding:8px; border-radius:var(--border-radius);}
+[contenteditable] {outline: 0px solid transparent;}
+#star{position: fixed;top: 15px;right: 15px;color: var(--text);font-size: 33px;}
+#menu{position: fixed;top: 15px;left: 15px;color: var(--text);font-size: 16px; cursor:pointer; background-color:var(--card); width:32px; height:32px;
+line-height:32px;text-align:center;border-radius:50%;}
+#menu:hover #menu-box{ display:block; }
+#menu-box{ display:none; text-align:center; border-radius:var(--border-radius); position: fixed;top: 40px;left: 7px; color: var(--text);font-size: 16px;background-color:var(--card); }
+#menu-box div{ cursor:pointer; padding:4px 12px; border-radius:var(--border-radius); line-height:25px; }
+#menu-box div:hover{ background-color:var(--accent);  }
+.neutral-class{}
+</style>
+
+<!-- ---------------- Contants ----------------- -->
+<script>
+const CommandKeys = ['Alt','Shift','Control','CapsLock','Tab','Shift','Control','ArrowLeft','ArrowRight','ArrowDown','ArrowUp',]
+const WelcomeText = '<ul contenteditable><li>welcom to nano-planner</li><li>you can edit these texts</li><li>and hit [Ctrl+S] to save</li></ul>'
+</script>
+
+<!-- ---------------- State ----------------- -->
+<script>
+</script>
+
+<!-- ---------------- Logic ----------------- -->
+<script>
+function IsCommandKey(key){ return CommandKeys.includes(key) }
+function DoNothing(){}
+function SaveData(name,data){ localStorage.setItem(name, data); }
+function LoadData(name){ return localStorage.getItem(name); }
+function GetContent(id) { return document.getElementById(id).innerHTML }
+function SetContent(id,content) { document.getElementById(id).innerHTML = content }
+function IsSaveAction(e){ return e.ctrlKey && ['s','S','س'].includes(e.key) }
+function SetThemeToLight(){ document.body.classList.add('theme-light'); document.body.classList.remove('theme-dark'); SaveData('theme','theme-light'); }
+function SetThemeToDark(){ document.body.classList.remove('theme-light'); document.body.classList.add('theme-dark'); SaveData('theme','theme-dark'); }
+function ToggleTextDirection(){ 
+     document.body.classList.toggle('direction-rtl');
+     SaveData('direction', document.body.classList.contains('direction-rtl')?'direction-rtl':'direction-ltr' ); 
+}
+function SaveProject(){ SaveData('content',GetContent('main')); SetContent('star',''); }
+function Init(){ 
+   SetContent('main',LoadData('content') || WelcomeText);
+   document.body.classList.add( LoadData('theme') || 'neutral-class' )
+   document.body.classList.add( LoadData('direction') || 'neutral-class' )
+}
+</script>
+
+
+
+<!-- ---------------- Main ----------------- -->
+<script>
+window.addEventListener('load',()=>Init())
+window.addEventListener('keydown',e=>{
+    if(IsSaveAction(e))
+    {
+      e.preventDefault()
+      SaveProject()
+    }
+    else if(!IsCommandKey(e.key)){
+      SetContent('star','*') 
+    }
+})
+</script>
+
+<!-- ---------------- Page HTML ----------------- -->
+<div id="star"></div>
+<div id="menu">☰
+	<div id="menu-box">
+	  <div id="menu-item-theme-light"      onclick="SetThemeToLight()"     title="light theme" > ☀️ </div>
+	  <div id="menu-item-theme-dark"       onclick="SetThemeToDark()"      title="dark theme" > 🌘 </div>
+	  <div id="menu-item-direction-toggle" onclick="ToggleTextDirection()" title="toggle text direction" > L/R </div>
+	  <div id="menu-item-save"             onclick="SaveProject()"         title="save to local storage"> 💾 </div>
+	</div>
+</div>
+<main contenteditable id="main"></main>

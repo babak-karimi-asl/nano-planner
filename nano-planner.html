@@ -44,6 +44,7 @@ line-height:32px;text-align:center;border-radius:50%;}
 <script>
 const CommandKeys = ['Alt','Shift','Control','CapsLock','Tab','Shift','Control','ArrowLeft','ArrowRight','ArrowDown','ArrowUp',]
 const WelcomeText = '<ul contenteditable><li>welcom to nano-planner</li><li>you can edit these texts</li><li>and hit [Ctrl+S] to save</li></ul>'
+const NameSpace = 'NANO_PLANNER_$_'
 </script>
 
 <!-- ---------------- State ----------------- -->
@@ -54,8 +55,8 @@ const WelcomeText = '<ul contenteditable><li>welcom to nano-planner</li><li>you 
 <script>
 function IsCommandKey(key){ return CommandKeys.includes(key) }
 function DoNothing(){}
-function SaveData(name,data){ localStorage.setItem(name, data); }
-function LoadData(name){ return localStorage.getItem(name); }
+function SaveData(name,data){ localStorage.setItem(NameSpace+name, data); }
+function LoadData(name){ return localStorage.getItem(NameSpace+name); }
 function GetContent(id) { return document.getElementById(id).innerHTML }
 function SetContent(id,content) { document.getElementById(id).innerHTML = content }
 function IsSaveAction(e){ return e.ctrlKey && ['s','S','س'].includes(e.key) }

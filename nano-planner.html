@@ -40,11 +40,13 @@ line-height:32px;text-align:center;border-radius:50%;}
 .neutral-class{}
 </style>
 
-<!-- ---------------- Contants ----------------- -->
+<!-- ---------------- Constants ----------------- -->
 <script>
 const CommandKeys = ['Alt','Shift','Control','CapsLock','Tab','Shift','Control','ArrowLeft','ArrowRight','ArrowDown','ArrowUp',]
 const WelcomeText = '<ul contenteditable><li>welcom to nano-planner</li><li>you can edit these texts</li><li>and hit [Ctrl+S] to save</li></ul>'
 const NameSpace = 'NANO_PLANNER_$_'
+const ContentId= 'content'
+const FileInputId = 'file-input'
 </script>
 
 <!-- ---------------- State ----------------- -->
@@ -67,10 +69,31 @@ function ToggleTextDirection(){
      SaveData('direction', document.body.classList.contains('direction-rtl')?'direction-rtl':'direction-ltr' ); 
 }
 function SaveProject(){ SaveData('content',GetContent('main')); SetContent('star',''); }
+function HandleFileInput(event){
+  const file = event.target.files[0]
+  GetBase64(file).then( AddImageToPage ).catch(e=>e)
+}
+function AddImageToPage(base64ImageData){
+    const img = document.createElement('img')
+    img.setAttribute('src',base64ImageData)
+    img.setAttribute('draggable',true)
+    img.setAttribute('style','max-width:80%;')
+	document.body.appendChild(img)
+}
 function Init(){ 
    SetContent('main',LoadData('content') || WelcomeText);
    document.body.classList.add( LoadData('theme') || 'neutral-class' )
    document.body.classList.add( LoadData('direction') || 'neutral-class' )
+   document.getElementById(FileInputId).addEventListener('change',HandleFileInput)
+}
+function OpenImage(){ document.getElementById(FileInputId).click() }//document.getElementById(FileInputId).cilck() }
+function GetBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
 }
 </script>
 
@@ -92,9 +115,11 @@ window.addEventListener('keydown',e=>{
 </script>
 
 <!-- ---------------- Page HTML ----------------- -->
+<input type="file" id="file-input" style="display:none;"/>
 <div id="star"></div>
 <div id="menu">☰
 	<div id="menu-box">
+	  <div id="menu-item-open-image"       onclick="OpenImage()"           title="add image"> 🖼️ </div>
 	  <div id="menu-item-theme-light"      onclick="SetThemeToLight()"     title="light theme" > ☀️ </div>
 	  <div id="menu-item-theme-dark"       onclick="SetThemeToDark()"      title="dark theme" > 🌘 </div>
 	  <div id="menu-item-direction-toggle" onclick="ToggleTextDirection()" title="toggle text direction" > L/R </div>

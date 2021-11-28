@@ -27,7 +27,7 @@
 <!-- ---------------- Page Styles ----------------- -->
 <style>
 *{ direction:var(--direction); }
-body{padding:40px 0 0 0;margin:0;background-color:var(--background);color:var(--text);}
+body{padding:40px 0 40px;margin:0;background-color:var(--background);color:var(--text);}
 #main{position:relative;width:600px;max-width:90vw;margin:auto;background-color:var(--card);color:var(--text);padding:8px; border-radius:var(--border-radius);}
 [contenteditable] {outline: 0px solid transparent;}
 #star{position: fixed;top: 15px;right: 15px;color: var(--text);font-size: 33px;}
@@ -85,6 +85,11 @@ function Init(){
    document.body.classList.add( LoadData('theme') || 'neutral-class' )
    document.body.classList.add( LoadData('direction') || 'neutral-class' )
    document.getElementById(FileInputId).addEventListener('change',HandleFileInput)
+   document.onpaste = (event) => {
+	  const data = event.clipboardData || window.clipboardData;
+	  const file = data?.files[ 0 ];
+      if(file) GetBase64(file).then( AddImageToPage ).catch(e=>e)
+   };
 }
 function OpenImage(){ document.getElementById(FileInputId).click() }//document.getElementById(FileInputId).cilck() }
 function GetBase64(file) {
